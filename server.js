@@ -454,6 +454,7 @@ if (!spData.artists || spData.artists.items.length === 0) {
         })
         .sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate))
         .map(r => ({
+          id: r.collectionId,
           name: r.collectionName,
           year: new Date(r.releaseDate).getFullYear(),
           trackCount: r.trackCount,
