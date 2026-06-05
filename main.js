@@ -19,7 +19,7 @@ const envSrc = path.join(__dirname, '.env.example');
 function ensureEnv() {
   if (!fs.existsSync(envDest)) {
     fs.mkdirSync(userDataDir, { recursive: true });
-    fs.copyFileSync(envSrc, envDest);
+    fs.writeFileSync(envDest, fs.readFileSync(envSrc, 'utf8'));
     firstRun = true;
   }
 }
@@ -95,11 +95,6 @@ function createWindow(port) {
   });
 
   mainWindow.loadURL(`http://localhost:${port}`);
-
-  if (process.platform !== 'darwin') {
-    mainWindow.setMenuBarVisibility(false);
-  }
-
   mainWindow.on('closed', () => { mainWindow = null; });
 }
 
