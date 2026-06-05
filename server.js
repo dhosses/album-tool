@@ -5,7 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 // Load .env file if present
-const envPath = path.join(__dirname, '.env');
+const envPath = process.env.ENV_FILE || path.join(__dirname, '.env');
 if (fs.existsSync(envPath)) {
   fs.readFileSync(envPath, 'utf8').split('\n').forEach(line => {
     const match = line.match(/^([^#=\s][^=]*)=(.*)$/);

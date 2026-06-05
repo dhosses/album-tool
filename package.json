@@ -2,12 +2,66 @@
   "name": "album-tool",
   "version": "1.0.0",
   "description": "Album info tool — artwork, tracklist, Spotify codes",
-  "main": "server.js",
+  "main": "main.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "electron": "electron .",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win"
   },
   "engines": {
     "node": ">=18.0.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^36.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.albumtool.app",
+    "productName": "Album Tool",
+    "copyright": "Copyright 2025",
+    "files": [
+      "main.js",
+      "server.js",
+      "app.js",
+      "index.html",
+      "styles.css",
+      ".env.example",
+      "package.json"
+    ],
+    "asar": true,
+    "afterPack": "./build/afterPack.js",
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["universal"] }
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.productivity",
+      "minimumSystemVersion": "11.0",
+      "hardenedRuntime": false,
+      "identity": null
+    },
+    "dmg": {
+      "title": "Album Tool",
+      "contents": [
+        { "x": 130, "y": 220 },
+        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+      ],
+      "window": { "width": 540, "height": 380 }
+    },
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Album Tool"
+    }
+  }
 }
