@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Album Info Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="loginOverlay" style="display:none;">
+  <div class="login-box">
+    <h1>Album Info Tool</h1>
+    <div class="login-form">
+      <input type="password" id="loginInput" placeholder="Enter password" autocomplete="current-password" />
+      <button id="loginBtn" onclick="submitLogin()">Enter</button>
+    </div>
+    <p class="login-err" id="loginErr">Wrong password. Try again.</p>
+  </div>
+</div>
+
+<header>
+  <h1>Album Info Tool</h1>
+</header>
+
+<div class="search-section">
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tabAlbum" onclick="setMode('album')">Album</button>
+    <button class="mode-tab" id="tabArtist" onclick="setMode('artist')">Artist</button>
+  </div>
+  <div class="search-row">
+    <div class="search-input-wrap">
+      <input type="text" id="searchInput" placeholder="Album name + artist" autocomplete="off" />
+      <div class="suggestions" id="suggestions"></div>
+    </div>
+    <button id="searchBtn" onclick="doSearch()">Search</button>
+  </div>
+</div>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <span id="loadingText">Searching...</span>
+</div>
+
+<div class="error-msg" id="errorMsg"></div>
+
+<div class="results" id="results">
+  <div class="album-header">
+    <img class="artwork" id="artworkImg" src="" alt="Album artwork">
+    <div class="album-meta">
+      <h2 id="albumName"></h2>
+      <div class="artist" id="artistName"></div>
+      <div class="meta-pills">
+        <div class="pill">
+          <span class="pill-label">Release Date</span>
+          <span class="pill-value" id="releaseDate"></span>
+        </div>
+        <div class="pill">
+          <span class="pill-label">Duration</span>
+          <span class="pill-value" id="duration"></span>
+        </div>
+        <div class="pill">
+          <span class="pill-label">Tracks</span>
+          <span class="pill-value" id="trackCount"></span>
+        </div>
+        <div class="pill" id="genrePill" style="display:none">
+          <span class="pill-label">Genre</span>
+          <span class="pill-value" id="genreValue"></span>
+        </div>
+        <div class="pill pill-explicit" id="explicitPill" style="display:none">
+          <span class="pill-label">Rating</span>
+          <span class="pill-value">Explicit</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="section-title">Steps to complete</p>
+    <div class="steps-grid">
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-num">1</div>
+          <div class="step-name">Album artwork PNG</div>
+        </div>
+        <div class="step-desc">3000×3000px high-resolution artwork — download directly.</div>
+        <div class="step-actions">
+          <a class="btn-open" id="artworkDownloadBtn" href="#">Download Artwork</a>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-num">2</div>
+          <div class="step-name">QR code</div>
+        </div>
+        <div class="step-desc">Spotify Code for this album — ready to download.</div>
+        <div class="qr-wrap">
+          <img id="spotifyCode" src="" alt="Spotify Code" style="display:none; border-radius:8px; width:180px;">
+          <p id="spotifyCodeMissing" style="display:none; font-size:12px; color:var(--muted); font-family:'DM Mono',monospace;">Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to enable.</p>
+          <div class="step-actions">
+            <a class="btn-open" id="qrDownloadBtn" href="#" style="display:none;">Download Spotify Code</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-num">3</div>
+          <div class="step-name">Apple Music link</div>
+        </div>
+        <div class="step-desc">Your Apple Music album URL — ready to copy.</div>
+        <div class="step-actions">
+          <a class="btn-open" id="appleMusicBtn" href="#" target="_blank">Open on Apple Music</a>
+        </div>
+        <div class="uri-box">
+          <span class="uri-text" id="appleMusicUrl"></span>
+          <button class="uri-copy" onclick="copyText('appleMusicUrl', this)">copy</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="tracklist-section">
+    <div class="tracklist-header">
+      <p class="section-title" style="margin:0">Tracklist</p>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <button class="copy-btn copy-format-btn" id="copyFormatBtn" onclick="toggleCopyFormat()" title="Toggle copy format">1. Title</button>
+        <button class="copy-btn" id="copyTracksBtn" onclick="copyTracks()">Copy all tracks</button>
+      </div>
+    </div>
+    <div class="tracklist" id="tracklist"></div>
+  </div>
+
+  <div id="moreAlbumsSection" style="display:none;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+      <p class="section-title" id="moreAlbumsTitle" style="margin:0"></p>
+      <div style="display:flex; gap:6px;">
+        <button class="carousel-arrow" id="carouselPrev" onclick="shiftCarousel(-1)">&#8592;</button>
+        <button class="carousel-arrow" id="carouselNext" onclick="shiftCarousel(1)">&#8594;</button>
+      </div>
+    </div>
+    <div class="carousel-track-wrap">
+      <div class="albums-row" id="moreAlbumsGrid"></div>
+    </div>
+  </div>
+
+  <button class="new-search-btn" id="backBtn" onclick="goBack()">← Back</button>
+</div>
+
+<div class="artist-results" id="artistResults">
+  <div class="artist-header">
+    <h2 id="artistResultName"></h2>
+    <p id="artistResultCount"></p>
+  </div>
+  <div class="sort-controls" id="sortControls" style="display:none;">
+    <span class="sort-label">Sort:</span>
+    <button class="sort-btn active" data-sort="newest" onclick="setSortAlbums('newest')">Newest</button>
+    <button class="sort-btn" data-sort="oldest" onclick="setSortAlbums('oldest')">Oldest</button>
+    <button class="sort-btn" data-sort="az" onclick="setSortAlbums('az')">A–Z</button>
+  </div>
+  <div class="artist-list" id="artistList"></div>
+  <div class="albums-grid" id="albumsGrid"></div>
+  <button class="new-search-btn" onclick="goBack()">← Back</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
