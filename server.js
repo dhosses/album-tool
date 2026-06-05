@@ -234,6 +234,16 @@ async function buildAlbumResult(album, query) {
     : null;
   const explicit = album.collectionExplicitness === 'explicit' || tracks.some(t => t.trackExplicitness === 'explicit');
   const genre = album.primaryGenreName || null;
+  const label = (() => {
+    const c = album.copyright || '';
+    const m = c.match(/[℗©]\s*\d{4}\s+(.+)/);
+    if (!m) return null;
+    return m[1]
+      .replace(/,?\s+a\s+(Division|Label)\s+of\s+.+/i, '')
+      .replace(/,?\s+under\s+exclusive\s+licen[cs]e\s+.+/i, '')
+      .replace(/\s*\([^)]*\)$/, '')
+      .trim() || null;
+  })();
   return {
     albumName: album.collectionName,
     artist: album.artistName,
@@ -241,6 +251,7 @@ async function buildAlbumResult(album, query) {
     duration: formatDuration(totalMs),
     explicit,
     genre,
+    label,
     artworkUrl,
     artworkFinderUrl,
     appleMusicUrl,

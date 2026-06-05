@@ -254,6 +254,14 @@ function renderResults(data) {
   document.getElementById('duration').textContent = data.duration;
   document.getElementById('trackCount').textContent = data.tracks.length + ' songs';
 
+  const labelPill = document.getElementById('labelPill');
+  if (data.label) {
+    document.getElementById('labelValue').textContent = data.label;
+    labelPill.style.display = '';
+  } else {
+    labelPill.style.display = 'none';
+  }
+
   const genrePill = document.getElementById('genrePill');
   if (data.genre) {
     document.getElementById('genreValue').textContent = data.genre;
