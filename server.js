@@ -114,8 +114,8 @@ let spotifyTokenExpiry = 0;
 
 async function getSpotifyToken() {
   if (spotifyToken && Date.now() < spotifyTokenExpiry) return spotifyToken;
-  const clientId = process.env.SPOTIFY_CLIENT_ID;
-  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+  const clientId = process.env.SPOTIFY_CLIENT_ID || 'a4f7e03ec41f45248db3210fcec386fc';
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET || '3e29628c98974ff3bac9dc1d71f6d12c';
   if (!clientId || !clientSecret) return null;
 
   const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
